@@ -1,0 +1,16 @@
+# Esta es la lista de lo que git no debe de subir al repositorio
+# cada liena es un archivo o carpeta a ignorar.
+
+# Paquetes descargados por npm: pesan mucho y se recrean con el comando "npm i"
+node_modules
+
+# Resultado de "npm run build" del frontend: esta se puede volver a generar.
+dist
+
+# Las fotos subidas por los usuarios no se cargan o se ignoran.
+# El asterisco (*) significa "todo lo que haya dentro de uploads se va a ignorar".
+backend/uploads/*
+
+# Exepción: el signo ! significa " Esta linea si se sube".
+# Git no guarda carpeta vacías, solo los archivos. Por eso dejamos dentro de la carpeta uploads un archivo llamado .gitkeep (Su único trabajo es mantener la carpeta).
+!backend/uploads/.gitkeep
