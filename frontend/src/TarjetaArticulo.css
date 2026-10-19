@@ -1,0 +1,21 @@
+/* Estilos de TarjetaArticulo.jsx: la tarjeta de UN artículo.
+   Todas las clases empiezan con "card-" para que no se mezclen con las de otros componentes. */
+
+.card { background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08); display: flex; flex-direction: column; }
+.card img, .card-sin-imagen { width: 100%; height: 180px; object-fit: cover; }
+.card-sin-imagen { display: grid; place-items: center; background: #e2e8f0; color: #64748b; }
+.card-cuerpo { padding: 14px 16px 16px; display: grid; gap: 8px; flex: 1; }
+.card h3 { margin: 0; }
+.card-descripcion { margin: 0; color: #475569; font-size: 14px; min-height: 38px; }
+
+/* Precios y stock en dos columnas */
+.card-datos { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; margin: 0; }
+.card-datos div { display: grid; }
+.card-datos dt { font-size: 11px; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; }
+.card-datos dd { margin: 0; font-weight: 700; }
+
+/* Margen: verde normalmente, rojo cuando es negativo */
+.card-margen { justify-self: start; font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 99px; background: #dcfce7; color: #166534; }
+.card-margen-negativo { background: #fee2e2; color: #991b1b; }
+
+.card-botones { display: flex; gap: 8px; margin-top: 4px; }

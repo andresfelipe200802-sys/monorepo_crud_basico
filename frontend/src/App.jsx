@@ -1,122 +1,62 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+// Responsabilidad: guardar el estado (lista de artículos, cuál se edita) y coordinar los componentes.
+import { useEffect, useState } from "react"
+import { eliminarArticulo, listarArticulos } from "./apiArticulos.js"
+import TarjetaArticulo from "./TarjetaArticulo.jsx"
+import FormularioArticulo from "./FormularioArticulo.jsx"
+import "./App.css"
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [articulos, setArticulos] = useState([])
+  const [formulario, setFormulario] = useState(null) // null = oculto · {} = nuevo · artículo = editar
+  const [mensajeError, setMensajeError] = useState("")
+
+  async function cargarArticulos() {
+    try {
+      setArticulos(await listarArticulos())
+      setMensajeError("")
+    } catch {
+      setMensajeError("No se pudo conectar con el servidor. ¿Está encendido el backend (npm run dev)?")
+    }
+  }
+
+  useEffect(() => { cargarArticulos() }, []) // al abrir la página, pide la lista
+
+  async function eliminar(articulo) {
+    if (!confirm(`¿Eliminar "${articulo.nombre}"?`)) return
+    await eliminarArticulo(articulo.id)
+    cargarArticulos()
+  }
+
+  function onGuardar() {
+    setFormulario(null)
+    cargarArticulos()
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
+    <main className="app">
+      <header className="app-cabecera">
+        <h1>Artículos</h1>
+        <button onClick={() => setFormulario({})}>+ Nuevo artículo</button>
+      </header>
+
+      {mensajeError && <p className="mensaje-error">{mensajeError}</p>}
+
+      {formulario && (
+        <FormularioArticulo
+          key={formulario.id ?? "nuevo"}
+          articulo={formulario.id ? formulario : null}
+          onGuardar={onGuardar}
+          onCancelar={() => setFormulario(null)}
+        />
+      )}
+
+      <section className="app-rejilla">
+        {articulos.map(articulo => (
+          <TarjetaArticulo key={articulo.id} articulo={articulo} onEditar={setFormulario} onEliminar={eliminar} />
+        ))}
       </section>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+      {!mensajeError && articulos.length === 0 && <p className="app-vacio">Todavía no hay artículos. ¡Crea el primero!</p>}
+    </main>
   )
 }
-
-export default App
